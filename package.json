@@ -1,24 +1,6 @@
 {
-  "name": "be-01-first-endpoint",
-  "version": "1.0.0",
-  "description": "A minimal Node.js server with two JSON endpoints.",
-  "main": "server.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/manshi-n/be-01-first-endpoint.git"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/manshi-n/be-01-first-endpoint/issues"
-  },
-  "homepage": "https://github.com/manshi-n/be-01-first-endpoint#readme",
   "dependencies": {
-    "express": "^5.2.1"
+    "express": "^5.2.1",
+    "sqlite3": "^6.0.1"
   }
 }
