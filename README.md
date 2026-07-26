@@ -111,14 +111,12 @@ DELETE FROM tasks WHERE done = 1;
 
 # SQL Query Screenshot
 
-![SQL Query Result](C:\Users\ASUS\be-01-first-endpoint\doc\1.jpg.png)
-
+![SQL Query Result](doc/1.jpg.png)
 ---
 
 # Database Screenshot
 
-![SQLite Database](C:\Users\ASUS\be-01-first-endpoint\doc\2.jpg.png)
-
+![SQLite Database](doc/2.jpg.png)
 ---
 
 ## Author
