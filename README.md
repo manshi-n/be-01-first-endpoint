@@ -1,126 +1,222 @@
-# Task CRUD API using SQLite
+# BE-01 First Endpoint
 
-A simple RESTful CRUD API built using **Node.js**, **Express.js**, and **SQLite**. The API allows users to create, read, update, and delete tasks while storing data permanently in a SQLite database.
-
----
+A simple Node.js + Express REST API connected to PostgreSQL using Docker Compose.
 
 ## Features
 
-- Create a task
-- Get all tasks
-- Get a task by ID
-- Update a task
-- Delete a task
-- Data persists after server restarts
+- REST API built with Express.js
+- PostgreSQL database integration
+- Dockerized application
+- Environment variable configuration
+- Database initialization using SQL script
+- Health-checked PostgreSQL service
 
 ---
 
-## Technologies Used
+## Tech Stack
 
 - Node.js
 - Express.js
-- SQLite
-- sqlite3
+- PostgreSQL 16
+- Docker
+- Docker Compose
 
 ---
 
-## Why SQLite?
+## Project Structure
 
-SQLite is a lightweight, serverless database that stores data in a single file. It was chosen because it is easy to set up, requires no separate database server, and is ideal for small backend projects and learning SQL.
+```
+be-01-first-endpoint/
+│
+├── database/
+│   ├── db.js
+│   └── init.sql
+│
+├── Dockerfile
+├── docker-compose.yml
+├── package.json
+├── package-lock.json
+├── server.js
+├── .env.example
+├── README.md
+└── .gitignore
+```
+
+---
+
+## Prerequisites
+
+- Docker Desktop
+- Docker Compose
+- Git
+
+---
+
+## Environment Variables
+
+Create a `.env` file using the following template.
+
+```env
+PORT=3000
+
+DB_HOST=db
+DB_PORT=5432
+DB_USER=postgres
+DB_PASSWORD=postgres
+DB_NAME=tasksdb
+```
 
 ---
 
 ## Installation
 
-### Clone the repository
+Clone the repository.
 
 ```bash
-git clone https://github.com/manshi-n/be-01-first-endpoint.git
+git clone https://github.com/<your-username>/be-01-first-endpoint.git
 ```
 
-### Open the project
+Go into the project directory.
 
 ```bash
 cd be-01-first-endpoint
 ```
 
-### Install dependencies
+---
+
+## Running the Project
+
+Build and start all services.
 
 ```bash
-npm install
+docker compose up --build
 ```
 
-### Start the server
+To stop the application.
 
 ```bash
-node server.js
+docker compose down
 ```
 
-The server runs at:
+To remove containers and database volume.
 
-```
-http://localhost:3000
+```bash
+docker compose down -v
 ```
 
 ---
 
 ## Database
 
-The SQLite database file is stored as:
+The PostgreSQL database is automatically initialized using
 
 ```
-tasks.db
+database/init.sql
 ```
 
-The database and `tasks` table are created automatically when the application starts. If the table is empty, three sample tasks are inserted automatically.
+The default database credentials are
+
+| Variable | Value |
+|----------|-------|
+| Host | db |
+| Port | 5432 |
+| User | postgres |
+| Password | postgres |
+| Database | tasksdb |
 
 ---
 
-## API Endpoints
+## API
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | / | Home route |
-| GET | /tasks | Get all tasks |
-| GET | /tasks/:id | Get a task by ID |
-| POST | /tasks | Create a task |
-| PUT | /tasks/:id | Update a task |
-| DELETE | /tasks/:id | Delete a task |
+The server starts on
 
----
-
-## Example SQL Query
-
-```sql
-SELECT * FROM tasks;
+```
+http://localhost:3000
 ```
 
-Other SQL queries executed:
+Example:
 
-```sql
-SELECT * FROM tasks WHERE done = 1;
+```
+GET /
+```
 
-SELECT COUNT(*) FROM tasks;
+Response
 
-UPDATE tasks SET done = 1;
+```json
+{
+  "message": "API is running"
+}
+```
 
-DELETE FROM tasks WHERE done = 1;
+> Replace the example above with your actual endpoint responses if they differ.
+
+---
+
+## Docker Services
+
+### API
+
+- Express.js application
+- Port **3000**
+
+### Database
+
+- PostgreSQL 16
+- Port **5432**
+
+---
+
+## Useful Commands
+
+Build and run
+
+```bash
+docker compose up --build
+```
+
+Run in background
+
+```bash
+docker compose up -d
+```
+
+Stop containers
+
+```bash
+docker compose down
+```
+
+Remove containers and volumes
+
+```bash
+docker compose down -v
+```
+
+View logs
+
+```bash
+docker compose logs
+```
+
+View logs for API only
+
+```bash
+docker compose logs api
 ```
 
 ---
 
-# SQL Query Screenshot
+## Sample Output
 
-![SQL Query Result](doc/1.jpg.png)
----
+```
+🚀 Server running on http://localhost:3000
+✅ Connected to PostgreSQL
+```
 
-# Database Screenshot
-
-![SQLite Database](doc/2.jpg.png)
 ---
 
 ## Author
 
-**Manshi **
+**Manshi Negi**
 
-GitHub: https://github.com/manshi-n
+GitHub: https://github.com/<your-username>
