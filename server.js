@@ -2,7 +2,7 @@ const express = require("express");
 const db = require("./database/db");
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
 
@@ -12,199 +12,168 @@ app.get("/", (req, res) => {
 });
 
 // GET all tasks
-app.get("/tasks", (req, res) => {
-    db.all("SELECT * FROM tasks", [], (err, rows) => {
-        if (err) {
-            return res.status(500).json({
-                error: err.message
-            });
-        }
+app.get("/tasks", async (req, res) => {
+    try {
+        const result = await db.query("SELECT * FROM tasks ORDER BY id");
 
-        const tasks = rows.map(task => ({
+        const tasks = result.rows.map(task => ({
             id: task.id,
             title: task.title,
-            done: Boolean(task.done)
+            done: task.done
         }));
 
         res.json(tasks);
-    });
+
+    } catch (err) {
+
+        res.status(500).json({
+            error: err.message
+        });
+
+    }
 });
 
 // GET task by ID
-app.get("/tasks/:id", (req, res) => {
+app.get("/tasks/:id", async (req, res) => {
 
-    const id = req.params.id;
+    try {
 
-    db.get(
-        "SELECT * FROM tasks WHERE id = ?",
-        [id],
-        (err, row) => {
+        const { id } = req.params;
 
-            if (err) {
-                return res.status(500).json({
-                    error: err.message
-                });
-            }
+        const result = await db.query(
+            "SELECT * FROM tasks WHERE id = $1",
+            [id]
+        );
 
-            if (!row) {
-                return res.status(404).json({
-                    error: "Task not found"
-                });
-            }
-
-            row.done = Boolean(row.done);
-
-            res.json(row);
+        if (result.rows.length === 0) {
+            return res.status(404).json({
+                error: "Task not found"
+            });
         }
-    );
+
+        res.json(result.rows[0]);
+
+    } catch (err) {
+
+        res.status(500).json({
+            error: err.message
+        });
+
+    }
+
 });
 
 // POST create task
-app.post("/tasks", (req, res) => {
+app.post("/tasks", async (req, res) => {
 
-    const { title } = req.body;
+    try {
 
-    if (!title) {
-        return res.status(400).json({
-            error: "Title is required"
+        const { title } = req.body;
+
+        if (!title) {
+            return res.status(400).json({
+                error: "Title is required"
+            });
+        }
+
+        const result = await db.query(
+            "INSERT INTO tasks(title, done) VALUES($1,$2) RETURNING *",
+            [title, false]
+        );
+
+        res.status(201).json(result.rows[0]);
+
+    } catch (err) {
+
+        res.status(500).json({
+            error: err.message
         });
+
     }
 
-    db.run(
-        "INSERT INTO tasks (title, done) VALUES (?, ?)",
-        [title, 0],
-        function (err) {
-
-            if (err) {
-                return res.status(500).json({
-                    error: err.message
-                });
-            }
-
-            db.get(
-                "SELECT * FROM tasks WHERE id = ?",
-                [this.lastID],
-                (err, row) => {
-
-                    if (err) {
-                        return res.status(500).json({
-                            error: err.message
-                        });
-                    }
-
-                    row.done = Boolean(row.done);
-
-                    res.status(201).json(row);
-                }
-            );
-        }
-    );
 });
 
 // PUT update task
-app.put("/tasks/:id", (req, res) => {
+app.put("/tasks/:id", async (req, res) => {
 
-    const id = req.params.id;
-    const { title, done } = req.body;
+    try {
 
-    db.get(
-        "SELECT * FROM tasks WHERE id = ?",
-        [id],
-        (err, row) => {
+        const { id } = req.params;
+        const { title, done } = req.body;
 
-            if (err) {
-                return res.status(500).json({
-                    error: err.message
-                });
-            }
+        const existing = await db.query(
+            "SELECT * FROM tasks WHERE id = $1",
+            [id]
+        );
 
-            if (!row) {
-                return res.status(404).json({
-                    error: "Task not found"
-                });
-            }
+        if (existing.rows.length === 0) {
 
-            const updatedTitle =
-                title !== undefined ? title : row.title;
+            return res.status(404).json({
+                error: "Task not found"
+            });
 
-            const updatedDone =
-                done !== undefined ? (done ? 1 : 0) : row.done;
-
-            db.run(
-                "UPDATE tasks SET title=?, done=? WHERE id=?",
-                [updatedTitle, updatedDone, id],
-                function (err) {
-
-                    if (err) {
-                        return res.status(500).json({
-                            error: err.message
-                        });
-                    }
-
-                    db.get(
-                        "SELECT * FROM tasks WHERE id=?",
-                        [id],
-                        (err, updatedTask) => {
-
-                            if (err) {
-                                return res.status(500).json({
-                                    error: err.message
-                                });
-                            }
-
-                            updatedTask.done = Boolean(updatedTask.done);
-
-                            res.json(updatedTask);
-                        }
-                    );
-                }
-            );
         }
-    );
+
+        const updatedTitle =
+            title !== undefined ? title : existing.rows[0].title;
+
+        const updatedDone =
+            done !== undefined ? done : existing.rows[0].done;
+
+        const result = await db.query(
+            `UPDATE tasks
+             SET title=$1, done=$2
+             WHERE id=$3
+             RETURNING *`,
+            [updatedTitle, updatedDone, id]
+        );
+
+        res.json(result.rows[0]);
+
+    } catch (err) {
+
+        res.status(500).json({
+            error: err.message
+        });
+
+    }
+
 });
 
 // DELETE task
-app.delete("/tasks/:id", (req, res) => {
+app.delete("/tasks/:id", async (req, res) => {
 
-    const id = req.params.id;
+    try {
 
-    db.get(
-        "SELECT * FROM tasks WHERE id=?",
-        [id],
-        (err, row) => {
+        const { id } = req.params;
 
-            if (err) {
-                return res.status(500).json({
-                    error: err.message
-                });
-            }
+        const result = await db.query(
+            "DELETE FROM tasks WHERE id=$1 RETURNING *",
+            [id]
+        );
 
-            if (!row) {
-                return res.status(404).json({
-                    error: "Task not found"
-                });
-            }
+        if (result.rows.length === 0) {
 
-            db.run(
-                "DELETE FROM tasks WHERE id=?",
-                [id],
-                function (err) {
+            return res.status(404).json({
+                error: "Task not found"
+            });
 
-                    if (err) {
-                        return res.status(500).json({
-                            error: err.message
-                        });
-                    }
-
-                    res.json({
-                        message: "Task deleted successfully"
-                    });
-                }
-            );
         }
-    );
+
+        res.json({
+            message: "Task deleted successfully"
+        });
+
+    } catch (err) {
+
+        res.status(500).json({
+            error: err.message
+        });
+
+    }
+
 });
 
 app.listen(PORT, () => {
-    console.log(`Server running on http://localhost:${PORT}`);
+    console.log(`🚀 Server running on http://localhost:${PORT}`);
 });

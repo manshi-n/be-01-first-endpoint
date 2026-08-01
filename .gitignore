@@ -1,18 +1,2 @@
-# Dependencies
-node_modules/
-
-# Build folder
-build/
-
-# Database
-tasks.db
-
-# Environment variables
+node_modules
 .env
-
-# Logs
-*.log
-
-# OS files
-.DS_Store
-Thumbs.db
