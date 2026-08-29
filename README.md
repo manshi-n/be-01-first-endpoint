@@ -1,222 +1,82 @@
-# BE-01 First Endpoint
+# Backend REST API — FlyRank A1–A3
 
-A simple Node.js + Express REST API connected to PostgreSQL using Docker Compose.
+A backend REST API project developed as part of the **FlyRank Backend AI Engineering Internship**.
 
-## Features
+This repository contains the progressive implementation of the first three backend assignments:
 
-- REST API built with Express.js
+- **A1 — Build your first CRUD API**
+- **A2 — Connecting to the database**
+- **A3 — Containerize your stack**
+
+The project was developed incrementally in the same repository, starting with a basic Express REST API, adding PostgreSQL database integration, and finally containerizing the complete backend stack using Docker Compose.
+
+---
+
+## Assignments
+
+### A1 — Build Your First CRUD API
+
+The first assignment focused on building a REST API using Node.js and Express.js.
+
+### Features
+
+- Express.js REST API
+- CRUD operations
+- JSON request and response handling
+- RESTful API routes
+- Basic backend server setup
+
+---
+
+### A2 — Connecting to the Database
+
+The second assignment extended the API by connecting it to a PostgreSQL database.
+
+### Features
+
 - PostgreSQL database integration
-- Dockerized application
-- Environment variable configuration
-- Database initialization using SQL script
-- Health-checked PostgreSQL service
-
----
-
-## Tech Stack
-
-- Node.js
-- Express.js
-- PostgreSQL 16
-- Docker
-- Docker Compose
-
----
-
-## Project Structure
-
-```
-be-01-first-endpoint/
-│
-├── database/
-│   ├── db.js
-│   └── init.sql
-│
-├── Dockerfile
-├── docker-compose.yml
-├── package.json
-├── package-lock.json
-├── server.js
-├── .env.example
-├── README.md
-└── .gitignore
-```
-
----
-
-## Prerequisites
-
-- Docker Desktop
-- Docker Compose
-- Git
-
----
-
-## Environment Variables
-
-Create a `.env` file using the following template.
-
-```env
-PORT=3000
-
-DB_HOST=db
-DB_PORT=5432
-DB_USER=postgres
-DB_PASSWORD=postgres
-DB_NAME=tasksdb
-```
-
----
-
-## Installation
-
-Clone the repository.
-
-```bash
-git clone https://github.com/<your-username>/be-01-first-endpoint.git
-```
-
-Go into the project directory.
-
-```bash
-cd be-01-first-endpoint
-```
-
----
-
-## Running the Project
-
-Build and start all services.
-
-```bash
-docker compose up --build
-```
-
-To stop the application.
-
-```bash
-docker compose down
-```
-
-To remove containers and database volume.
-
-```bash
-docker compose down -v
-```
-
----
-
-## Database
-
-The PostgreSQL database is automatically initialized using
-
-```
-database/init.sql
-```
-
-The default database credentials are
-
-| Variable | Value |
-|----------|-------|
-| Host | db |
-| Port | 5432 |
-| User | postgres |
-| Password | postgres |
-| Database | tasksdb |
-
----
-
-## API
-
-The server starts on
-
-```
-http://localhost:3000
-```
-
-Example:
-
-```
-GET /
-```
-
-Response
-
-```json
-{
-  "message": "API is running"
-}
-```
-
-> Replace the example above with your actual endpoint responses if they differ.
-
----
-
-## Docker Services
-
-### API
-
-- Express.js application
-- Port **3000**
+- Database-backed task management
+- SQL database initialization
+- Environment-based database configuration
+- CRUD operations connected to PostgreSQL
 
 ### Database
 
+The application uses:
+
 - PostgreSQL 16
-- Port **5432**
+- `pg` Node.js PostgreSQL client
+
+The database schema is initialized using the SQL initialization script.
 
 ---
 
-## Useful Commands
+### A3 — Containerize Your Stack
 
-Build and run
+The third assignment containerized the backend and database so the complete application can be started with Docker Compose.
 
-```bash
-docker compose up --build
-```
+### Features
 
-Run in background
+- Dockerized Node.js API
+- PostgreSQL Docker container
+- Docker Compose orchestration
+- Persistent PostgreSQL volume
+- Environment variable configuration
+- PostgreSQL health check
+- Service dependency management
 
-```bash
-docker compose up -d
-```
+The application consists of two services:
 
-Stop containers
-
-```bash
-docker compose down
-```
-
-Remove containers and volumes
-
-```bash
-docker compose down -v
-```
-
-View logs
-
-```bash
-docker compose logs
-```
-
-View logs for API only
-
-```bash
-docker compose logs api
-```
-
----
-
-## Sample Output
-
-```
-🚀 Server running on http://localhost:3000
-✅ Connected to PostgreSQL
-```
-
----
-
-## Author
-
-**Manshi Negi**
-
-GitHub: https://github.com/<your-username>
+```text
+┌──────────────────────────┐
+│       Node.js API        │
+│       Express.js         │
+│       Port: 3000         │
+└────────────┬─────────────┘
+             │
+             │ PostgreSQL
+             ▼
+┌──────────────────────────┐
+│      PostgreSQL 16       │
+│       Port: 5432         │
+└──────────────────────────┘
